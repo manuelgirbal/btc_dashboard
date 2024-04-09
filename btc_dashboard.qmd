@@ -1,0 +1,18 @@
+---
+author: "manuelgg"
+server: shiny
+format:
+  dashboard:
+    orientation: rows
+    scrolling: true
+    theme: slate
+---
+
+```{r}
+#| context: setup
+#| echo: false
+#| include: false
+options(scipen=999)
+```
+
+Testeo: revisar config. inicial
