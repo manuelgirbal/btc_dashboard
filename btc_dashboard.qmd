@@ -1,6 +1,5 @@
 ---
 author: "manuelgg"
-server: shiny
 format:
   dashboard:
     orientation: rows
@@ -9,10 +8,34 @@ format:
 ---
 
 ```{r}
-#| context: setup
-#| echo: false
 #| include: false
+#| cache: true
+
 options(scipen=999)
+
+library(plotly)
+
+source("scripts/prices.R")
+source("scripts/transactions.R")
+
 ```
 
 Testeo: revisar config. inicial
+
+## Row
+
+```{r}
+#| title: "Price"
+
+btcprice_plot
+
+```
+
+```{r}
+#| title: "Transactions"
+
+btctxs_plot
+
+```
+
+
