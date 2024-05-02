@@ -1,39 +1,47 @@
-library(shroomDK)
-library(dplyr)
-library(ggplot2)
+library(tidyverse)
+library(httr)
+library(jsonlite)
 library(lubridate)
 
-# https://docs.flipsidecrypto.com/flipside-api/getting-started
+## Getting price data from [mempool.space](https://mempool.space/)
 
-api_key <- readLines("api_keys.txt") # always gitignore your API keys!
+# Define the API endpoint URL
+url <- "https://mempool.space/api/v1/historical-price?currency=USD"
 
-query <- {
-  "
-  select date(date_trunc('Day', hour)) as day,
-         avg(close) as price
-  from bitcoin.price.fact_hourly_token_prices
-  group by 1
-  order by 1 desc
-  "
-}
+# Send the HTTP request to the API endpoint
+response <- GET(url)
 
-pull_data <- auto_paginate_query(
-  query = query,
-  api_key = api_key
+# Convert the response to a JSON object
+json_data <- fromJSON(content(response, "text"))
+
+# Extract the price data from the JSON object
+prices <- json_data$prices
+
+# Change variables formats and names
+btcprice <- as_tibble(
+  prices |>
+    transmute(
+      date = as_date(format(as.POSIXct(time, origin = "1970-01-01"), "%Y-%m-%d")),
+      price = round(USD,2))
 )
 
+# Compute mean daily price
+btcprice <- btcprice |> 
+  group_by(date) |> 
+  summarise(price = mean(price))
 
-# Constructing the table:
-df_prices <- as_tibble(
-  pull_data %>%
-    transmute(day = as_date(ymd_hms(day)),
-              price = round(price, 1))
-)
+#Computing yearly variation (of avg price per year):
+yearly <- btcprice %>%
+  mutate(year = year(date)) %>%
+  group_by(year) %>%
+  summarise(avg_price = round(mean(price, na.rm = T),2)) %>%
+  arrange(year) %>%
+  mutate(year_var = round((avg_price/lag(avg_price)-1),2)) %>%
+  replace(is.na(.), 0)
 
-
-# Creating plot:
-btcprice_plot <- df_prices %>%
-  ggplot(aes(day, price)) +
+# Creating plot
+btcprice_plot <- btcprice %>%
+  ggplot(aes(date, price)) +
   geom_line() +
   ylab("USD Price") +
   xlab("Date") +

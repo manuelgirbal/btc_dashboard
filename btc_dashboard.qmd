@@ -27,14 +27,14 @@ Testeo: revisar config. inicial
 ```{r}
 #| title: "Price"
 
-btcprice_plot
+ggplotly(btcprice_plot)
 
 ```
 
 ```{r}
 #| title: "Transactions"
 
-btctxs_plot
+ggplotly(btctxs_plot)
 
 ```
 
