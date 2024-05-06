@@ -3,7 +3,6 @@ format:
   dashboard:
     orientation: rows
     scrolling: true
-    theme: slate
 ---
 
 ```{r}
@@ -12,32 +11,11 @@ format:
 options(scipen=999)
 
 library(dplyr)
-library(plotly)
 library(DT)
 
 source("scripts/prices.R")
-source("scripts/transactions.R")
 
 ```
-
-Testeo: revisar config. inicial
-
-## Row
-
-```{r}
-#| title: "Bitcoin's daily USD price"
-
-ggplotly(btcprice_plot)
-
-```
-
-```{r}
-#| title: "Bitcoin's monthly transactions"
-
-ggplotly(btctxs_plot)
-
-```
-
 
 ## Row
 
@@ -53,16 +31,15 @@ datatable(yearly,
             columnDefs = list(list(className = 'dt-center', targets = "_all"))),
           rownames = FALSE) # |> 
   # formatPercentage("year_var",
-  #                  2) |>
+  #                  1) |> 
   # formatStyle("year_var",
   #             fontWeight = "bold",
   #             backgroundColor = styleInterval(c(-0.01, 0.01),
-  #                                             c("#FFCDD2", "grey", "#C8E6C9"))) # |>
+  #                                             c("#FFCDD2", "grey", "#C8E6C9"))) # |> 
   # formatCurrency("avg_price",
-  #                currency = "$") |>
+  #                currency = "$") |> 
   # formatStyle(names(yearly),
   #             textAlign = "center",
   #             target = "cell")
 
 ```
-
