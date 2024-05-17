@@ -1,8 +1,10 @@
 ---
+title: "A bitcoin dashboard"
 format:
   dashboard:
     orientation: rows
     scrolling: true
+    theme: cyborg
 ---
 
 ```{r}
@@ -11,9 +13,30 @@ format:
 options(scipen=999)
 
 library(dplyr)
+library(plotly)
 library(DT)
 
-source("scripts/prices.R")
+# source("scripts/prices.R")
+# source("scripts/transactions.R")
+load("test.RData")
+
+```
+
+# Basic metrics
+
+## Row
+
+```{r}
+#| title: "Bitcoin's daily USD price"
+
+ggplotly(btcprice_plot)
+
+```
+
+```{r}
+#| title: "Bitcoin's monthly transactions"
+
+ggplotly(btctxs_plot)
 
 ```
 
@@ -29,17 +52,35 @@ datatable(yearly,
             paging = FALSE,
             info = FALSE,
             columnDefs = list(list(className = 'dt-center', targets = "_all"))),
-          rownames = FALSE) # |> 
-  # formatPercentage("year_var",
-  #                  1) |> 
-  # formatStyle("year_var",
-  #             fontWeight = "bold",
-  #             backgroundColor = styleInterval(c(-0.01, 0.01),
-  #                                             c("#FFCDD2", "grey", "#C8E6C9"))) # |> 
-  # formatCurrency("avg_price",
-  #                currency = "$") |> 
-  # formatStyle(names(yearly),
-  #             textAlign = "center",
-  #             target = "cell")
+          rownames = FALSE) |> 
+  formatPercentage("year_var",
+                   2) |>
+  formatStyle("year_var",
+              fontWeight = "bold",
+              backgroundColor = styleInterval(c(-0.01, 0.01),
+                                              c("#FFCDD2", "grey", "#C8E6C9"))) |>
+  formatStyle(c("year","avg_price"),
+              backgroundColor = "#A6A6A6") |>  
+  formatCurrency("avg_price",
+                 currency = "$") |>
+  formatStyle(names(yearly),
+              textAlign = "center",
+              target = "cell")
 
 ```
+
+::: card-header
+**Testeo**
+:::
+
+::: card-body
+-   **Asd**: yadayada.
+
+-   **Asd**: yadayada..
+:::
+
+
+# Experimental
+
+Still empty
+

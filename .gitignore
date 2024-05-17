@@ -10,3 +10,5 @@ scripts/previous/
 test_cache/
 test_files/
 test.html
+test.R
+test.RData
