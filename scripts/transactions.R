@@ -26,19 +26,8 @@ pull_data <- auto_paginate_query(
 # Constructing the table:
 df_txs <- as_tibble(
   pull_data %>%
-    transmute(date = as_date(ymd_hms(month)),
-              txs)
+    transmute(date = as_date((ymd_hms(month))),
+              txs) |> 
+    slice(2:n())
 )
-
-
-# Creating plot:
-btctxs_plot <- df_txs %>%
-  ggplot(aes(date, txs)) +
-  geom_line() +
-  ylab("Transactions") +
-  xlab("Date") +
-  scale_x_date(date_breaks = "1 year", date_labels = "%Y") # +
-  # theme(plot.background = element_rect(fill = "#A6A6A6"),
-  #       panel.background = element_rect(fill = "#A6A6A6"),
-  #       panel.grid.major = element_line(colour = "#7A7A7A"))
 
