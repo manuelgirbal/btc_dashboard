@@ -2,4 +2,4 @@
 A bitcoin dashboard
 
 Find it here: 
-https://manuelgg.shinyapps.io/BTC_dashboard/
+https://manuelgg.shinyapps.io/btc_dashboard/

@@ -19,17 +19,18 @@ library(plotly)
 library(DT)
 library(lubridate)
 
-# source("scripts/prices.R")
-# source("scripts/transactions.R")
-load("test.RData")
+source("scripts/prices.R")
+source("scripts/transactions.R")
 
 ```
+
 
 # Basic metrics
 
 ## Row {height="150"}
 
 ### Column
+
 ```{r}
 #| content: valuebox
 #| title: "Current price"
@@ -43,7 +44,9 @@ list(
 )
 ```
 
+
 ### Column
+
 ```{r}
 #| content: valuebox
 #| title: "Total transactions"
@@ -58,9 +61,11 @@ list(
 ```
 
 
+
 ## Row
 
 ### {.sidebar}
+
 
 ```{r}
 
@@ -86,7 +91,9 @@ year_filtered <- reactive({
 
 ```
 
+
 ### Column 
+
 
 ```{r}
 #| title: "Bitcoin's daily USD price"
@@ -103,7 +110,9 @@ ggplotly(
 
 ```
 
+
 ### Column 
+
 
 ```{r}
 #| title: "Bitcoin's monthly transactions"
@@ -120,9 +129,11 @@ ggplotly(
 
 ```
 
+
 ## Row
 
 ### Column 
+
 
 ```{r}
 #| title: "Bitcoin's average yearly USD price"
@@ -150,7 +161,9 @@ datatable(yearly_price,
 
 ```
 
+
 ### Column
+
 
 ```{r}
 #| title: "Bitcoin's yearly transactions"
@@ -175,6 +188,3 @@ datatable(yearly_txs,
 
 
 ```
-
-
-

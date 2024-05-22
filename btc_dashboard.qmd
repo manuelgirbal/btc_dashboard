@@ -1,5 +1,6 @@
 ---
 title: "A bitcoin dashboard"
+server: shiny
 format:
   dashboard:
     orientation: rows
@@ -55,7 +56,36 @@ list(
 )
 ```
 
+
 ## Row
+
+### {.sidebar}
+
+```{r}
+
+dateRangeInput (
+        inputId = "year_input",
+        label = "Select year range:",
+        start = "2009-06-01",
+        end = Sys.Date(),
+      )
+
+```
+
+```{r}
+#| context: server
+
+year_filtered <- reactive({
+  
+  btcprice |> 
+    filter(date %in% input$year_input)
+  
+})
+ 
+
+```
+
+### Column 
 
 ```{r}
 #| title: "Bitcoin's daily USD price"
@@ -65,12 +95,14 @@ ggplotly(
     geom_line(linewidth = 0.8) +
     ylab("") +
     xlab("") +
-    scale_x_date(date_breaks = "1 year", date_labels = "%Y") +
+    scale_x_date(date_breaks = "2 years", date_labels = "%Y") +
     theme(plot.background = element_rect(fill = "#FCE9D6"),
           panel.background = element_rect(fill = "#FCE9D6"))
 )
 
 ```
+
+### Column 
 
 ```{r}
 #| title: "Bitcoin's monthly transactions"
@@ -80,7 +112,7 @@ ggplotly(
     geom_line(linewidth = 0.8) +
     ylab("") +
     xlab("") +
-    scale_x_date(date_breaks = "1 year", date_labels = "%Y") +
+    scale_x_date(date_breaks = "2 years", date_labels = "%Y") +
     theme(plot.background = element_rect(fill = "#FCE9D6"),
           panel.background = element_rect(fill = "#FCE9D6"))
 )
@@ -88,6 +120,8 @@ ggplotly(
 ```
 
 ## Row
+
+### Column 
 
 ```{r}
 #| title: "Bitcoin's average yearly USD price"
@@ -114,6 +148,8 @@ datatable(yearly_price,
 
 
 ```
+
+### Column
 
 ```{r}
 #| title: "Bitcoin's yearly transactions"
