@@ -31,10 +31,11 @@ btcprice <- btcprice |>
   summarise(price = mean(price))
 
 #Computing yearly variation (of avg price per year):
-yearly <- btcprice %>%
-  mutate(year = year(date)) %>%
-  group_by(year) %>%
-  summarise(avg_price = round(mean(price, na.rm = T),2)) %>%
-  arrange(year) %>%
-  mutate(year_var = round((avg_price/lag(avg_price)-1),2)) %>%
-  replace(is.na(.), 0)
+yearly_price <- btcprice |> 
+  mutate(year = year(date))  |> 
+  group_by(year) |> 
+  summarise(avg_price = round(mean(price, na.rm = T),2)) |> 
+  arrange(year) |> 
+  mutate(year_var = if_else(is.na(avg_price/lag(avg_price)-1),
+                            true = 0,
+                            false = round((avg_price/lag(avg_price)-1),2)))

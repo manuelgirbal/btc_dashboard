@@ -25,9 +25,17 @@ pull_data <- auto_paginate_query(
 
 # Constructing the table:
 df_txs <- as_tibble(
-  pull_data %>%
+  pull_data |> 
     transmute(date = as_date((ymd_hms(month))),
-              txs) |> 
-    slice(2:n())
+              txs)
 )
 
+#Computing yearly variation of transactions:
+yearly_txs <- df_txs |> 
+  mutate(year = year(date))  |> 
+  group_by(year) |> 
+  summarise(y_txs = sum(txs)) |> 
+  arrange(year) |> 
+  mutate(year_var = if_else(is.na(y_txs/lag(y_txs)-1),
+                            true = 0,
+                            false = round((y_txs/lag(y_txs)-1),2)))

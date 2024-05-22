@@ -4,7 +4,7 @@ format:
   dashboard:
     orientation: rows
     scrolling: true
-    theme: cyborg
+    theme: lux
 ---
 
 ```{r}
@@ -26,6 +26,36 @@ load("test.RData")
 
 # Basic metrics
 
+## Row {height="150"}
+
+### Column
+```{r}
+#| content: valuebox
+#| title: "Current price"
+#| width: 200
+#| height: 120
+
+list(
+  icon = "currency-bitcoin",
+  color = "primary",
+  value = paste("$",round(tail(btcprice$price,1),1))
+)
+```
+
+### Column
+```{r}
+#| content: valuebox
+#| title: "Total transactions"
+#| width: 200
+#| height: 120
+
+list(
+  icon = "wifi",
+  color = "primary",
+  value = sum(df_txs$txs)
+)
+```
+
 ## Row
 
 ```{r}
@@ -37,8 +67,8 @@ ggplotly(
     ylab("") +
     xlab("") +
     scale_x_date(date_breaks = "1 year", date_labels = "%Y") +
-    theme(plot.background = element_rect(fill = "grey"),
-          panel.background = element_rect(fill = "grey"))
+    theme(plot.background = element_rect(fill = "#FCE9D6"),
+          panel.background = element_rect(fill = "#FCE9D6"))
 )
 
 ```
@@ -47,13 +77,13 @@ ggplotly(
 #| title: "Bitcoin's monthly transactions"
 
 ggplotly(
-  ggplot(df_txs, aes(date, txs)) +
+  ggplot(df_txs |> slice(2:n()), aes(date, txs)) +
     geom_line(linewidth = 0.8) +
     ylab("") +
     xlab("") +
     scale_x_date(date_breaks = "1 year", date_labels = "%Y") +
-    theme(plot.background = element_rect(fill = "grey"),
-          panel.background = element_rect(fill = "grey"))
+    theme(plot.background = element_rect(fill = "#FCE9D6"),
+          panel.background = element_rect(fill = "#FCE9D6"))
 )
 
 ```
@@ -63,43 +93,52 @@ ggplotly(
 ```{r}
 #| title: "Bitcoin's average yearly USD price"
 
-datatable(yearly,
+datatable(yearly_price,
           options = list(
             lengthChange = FALSE,
             searching = FALSE,
             paging = FALSE,
             info = FALSE,
-            columnDefs = list(list(className = 'dt-center', targets = "_all")),
-            initComplete = JS(
-                            "function(settings, json) {",
-                            "$(this.api().table().header()).css({'color': '#fff'});",
-                            "}")),
+            columnDefs = list(list(className = 'dt-center', targets = "_all"))
+            ),
           rownames = FALSE) |>
   formatPercentage("year_var") |> 
   formatCurrency("avg_price",
                  currency = "$") |>
-  formatStyle(names(yearly),
+  formatStyle(names(yearly_price),
               textAlign = "center",
               target = "cell")  |> 
   formatStyle("year_var",
               fontWeight = "bold",
               backgroundColor = styleInterval(c(-0.01, 0.01),
-                                              c("#FFCDD2", "#d1d1d1", "#C8E6C9"))) |>
-  formatStyle(c("year","avg_price"),
-              backgroundColor = "#d1d1d1")
+                                              c("#FFCDD2", "#FCE9D6", "#C8E6C9")))
 
 
 ```
 
-::: card-header
-**Testeo**
-:::
+```{r}
+#| title: "Bitcoin's yearly transactions"
 
-::: card-body
--   **Asd**: yadayada.
+datatable(yearly_txs,
+          options = list(
+            lengthChange = FALSE,
+            searching = FALSE,
+            paging = FALSE,
+            info = FALSE,
+            columnDefs = list(list(className = 'dt-center', targets = "_all"))
+            ),
+          rownames = FALSE) |>
+  formatPercentage("year_var") |> 
+  formatStyle(names(yearly_txs),
+              textAlign = "center",
+              target = "cell")  |> 
+  formatStyle("year_var",
+              fontWeight = "bold",
+              backgroundColor = styleInterval(c(-0.01, 0.01),
+                                              c("#FFCDD2", "#FCE9D6", "#C8E6C9")))
 
--   **Asd**: yadayada..
-:::
+
+```
 
 
 
