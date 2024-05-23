@@ -8,7 +8,6 @@ library(lubridate)
 # Define the API endpoint URL
 url <- "https://api.blockchain.info/charts/n-transactions?timespan=15years&format=json&sampled=false"
 
-
 # Send the HTTP request to the API endpoint
 response <- GET(url)
 
@@ -23,12 +22,6 @@ df_txs <- df_txs |>
   transmute(
     date = as_date(format(as.POSIXct(x, origin = "1970-01-01"), "%Y-%m-%d")),
     txs = y)
-
-# # Group and sum by month:
-# df_txs <- df_txs |> 
-#   mutate(date = floor_date(date, "month")) |>
-#   group_by(date) |>
-#   summarize(txs = sum(txs))
 
 #Computing yearly variation of transactions:
 yearly_txs <- df_txs |> 

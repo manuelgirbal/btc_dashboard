@@ -3,10 +3,10 @@ library(httr)
 library(jsonlite)
 library(lubridate)
 
-## Getting price data from [mempool.space](https://mempool.space/)
+## Getting price data from [Blockchain.info](https://blockchain.info/)
 
 # Define the API endpoint URL
-url <- "https://mempool.space/api/v1/historical-price?currency=USD"
+url <- "https://api.blockchain.info/charts/market-price?timespan=15years&start=2010-08-01&format=json&sampled=false"
 
 # Send the HTTP request to the API endpoint
 response <- GET(url)
@@ -15,20 +15,15 @@ response <- GET(url)
 json_data <- fromJSON(content(response, "text"))
 
 # Extract the price data from the JSON object
-prices <- json_data$prices
+prices <- json_data$values
 
 # Change variables formats and names
 btcprice <- as_tibble(
   prices |>
     transmute(
-      date = as_date(format(as.POSIXct(time, origin = "1970-01-01"), "%Y-%m-%d")),
-      price = round(USD,2))
+      date = as_date(format(as.POSIXct(x, origin = "1970-01-01"), "%Y-%m-%d")),
+      price = round(y,2))
 )
-
-# Compute mean daily price
-btcprice <- btcprice |> 
-  group_by(date) |> 
-  summarise(price = mean(price))
 
 #Computing yearly variation (of avg price per year):
 yearly_price <- btcprice |> 

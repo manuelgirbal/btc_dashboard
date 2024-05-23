@@ -1432,17 +1432,6 @@
       ],
       "Hash": "54b26646816af9960a4c64d8ceec75d6"
     },
-    "shroomDK": {
-      "Package": "shroomDK",
-      "Version": "0.3.0",
-      "Source": "Repository",
-      "Repository": "RSPM",
-      "Requirements": [
-        "httr",
-        "jsonlite"
-      ],
-      "Hash": "7c74c0e88724c25abfec2976fe0a9066"
-    },
     "sourcetools": {
       "Package": "sourcetools",
       "Version": "0.1.7-1",
