@@ -2,12 +2,9 @@
 .Rhistory
 .RData
 .Ruserdata
-api_keys.txt
-btc_dashboard_cache/
 btc_dashboard_files/
 btc_dashboard.html
-test_cache/
-test_files/
-test.html
+test/test_files/
+test/test.html
 scripts/previous/
 rsconnect/

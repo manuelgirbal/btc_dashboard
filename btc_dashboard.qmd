@@ -9,10 +9,12 @@ format:
 ---
 
 ```{r}
+#| context: setup
 #| include: false
 
 options(scipen=999)
 
+library(shiny)
 library(dplyr)
 library(ggplot2)
 library(plotly)
@@ -63,59 +65,108 @@ list(
 
 ```{r}
 
-dateRangeInput (
-        inputId = "year_input",
-        label = "Select year range:",
-        start = "2009-06-01",
-        end = Sys.Date(),
-      )
+radioButtons("time_period",
+            label = "Select Time Period:",
+            choices = list("7 days" = "7d",
+                           "1 month" = "1m", 
+                           "3 months" = "3m", 
+                           "1 year" = "1a", 
+                           "Maximum" = "max"),
+                  selected = "max")
 
 ```
 
-```{r}
-#| context: server
-
-year_filtered <- reactive({
-  
-  btcprice |> 
-    filter(date %in% input$year_input)
-  
-})
- 
-
-```
 
 ### Column 
 
 ```{r}
 #| title: "Bitcoin's daily USD price"
 
-ggplotly(
-  ggplot(btcprice, aes(date, price)) +
+plotlyOutput("plot_btcprice")
+
+```
+
+```{r}
+#| context: server
+
+# Find the range of dates in the data
+date_range <- range(btcprice$date)
+start_date <- date_range[1]
+end_date <- date_range[2]
+
+btcprice_reactive <- reactive({
+  
+  btcprice |>
+    filter(date >= case_when(
+      input$time_period == "7d" ~ end_date - 7,
+      input$time_period == "1m" ~ end_date  %m-% months(1),
+      input$time_period == "3m" ~ end_date  %m-% months(3),
+      input$time_period == "1a" ~ end_date  %m-% years(1),
+      input$time_period == "max" ~ start_date
+      ))
+  
+})
+
+output$plot_btcprice <- renderPlotly({
+  
+  p1 <- ggplot(btcprice_reactive(), aes(date, price)) +
     geom_line(linewidth = 0.8) +
     ylab("") +
     xlab("") +
     scale_x_date(date_breaks = "2 years", date_labels = "%Y") +
     theme(plot.background = element_rect(fill = "#FCE9D6"),
           panel.background = element_rect(fill = "#FCE9D6"))
-)
+  
+  ggplotly(p1)
+  
+})
 
 ```
+
 
 ### Column 
 
 ```{r}
 #| title: "Bitcoin's monthly transactions"
 
-ggplotly(
-  ggplot(df_txs |> slice(2:n()), aes(date, txs)) +
-    geom_line(linewidth = 0.8) +
+plotlyOutput("plot_txs")
+
+```
+
+```{r}
+#| context: server
+
+# Find the range of dates in the data
+date_range <- range(btcprice$date)
+start_date <- date_range[1]
+end_date <- date_range[2]
+
+df_txs_reactive <- reactive({
+  
+  df_txs |>
+    filter(date >= case_when(
+      input$time_period == "7d" ~ end_date - 7,
+      input$time_period == "1m" ~ end_date  %m-% months(1),
+      input$time_period == "3m" ~ end_date  %m-% months(3),
+      input$time_period == "1a" ~ end_date  %m-% years(1),
+      input$time_period == "max" ~ start_date
+      ))
+  
+})
+
+output$plot_txs <- renderPlotly({
+  
+  p2 <- ggplot(df_txs_reactive(), aes(date, txs)) +
+    geom_line(linewidth = 0.5) +
     ylab("") +
     xlab("") +
     scale_x_date(date_breaks = "2 years", date_labels = "%Y") +
     theme(plot.background = element_rect(fill = "#FCE9D6"),
           panel.background = element_rect(fill = "#FCE9D6"))
-)
+  
+  ggplotly(p2)
+  
+})
 
 ```
 

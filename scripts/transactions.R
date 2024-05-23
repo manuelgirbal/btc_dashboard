@@ -1,34 +1,34 @@
-library(shroomDK)
-library(dplyr)
-library(ggplot2)
+library(tidyverse)
+library(httr)
+library(jsonlite)
 library(lubridate)
 
-# https://docs.flipsidecrypto.com/flipside-api/getting-started
+## Getting price data from [Blockchain.info](https://blockchain.info/)
 
-api_key = readLines("api_keys.txt") # always gitignore your API keys!
-
-query <- {
-  "
-  select date(date_trunc('Month', block_timestamp)) as month,
-       count(*) as txs
-  from bitcoin.core.fact_transactions
-  group by 1
-  order by 1 desc
-  "
-}
-
-pull_data <- auto_paginate_query(
-  query = query,
-  api_key = api_key
-)
+# Define the API endpoint URL
+url <- "https://api.blockchain.info/charts/n-transactions?timespan=15years&format=json&sampled=false"
 
 
-# Constructing the table:
-df_txs <- as_tibble(
-  pull_data |> 
-    transmute(date = as_date((ymd_hms(month))),
-              txs)
-)
+# Send the HTTP request to the API endpoint
+response <- GET(url)
+
+# Convert the response to a JSON object
+json_data <- fromJSON(content(response, "text"))
+
+# Extract the txs data from the JSON object
+df_txs <- as_tibble(json_data$values)
+
+# Change variables formats and names
+df_txs <- df_txs |>
+  transmute(
+    date = as_date(format(as.POSIXct(x, origin = "1970-01-01"), "%Y-%m-%d")),
+    txs = y)
+
+# # Group and sum by month:
+# df_txs <- df_txs |> 
+#   mutate(date = floor_date(date, "month")) |>
+#   group_by(date) |>
+#   summarize(txs = sum(txs))
 
 #Computing yearly variation of transactions:
 yearly_txs <- df_txs |> 
@@ -39,3 +39,4 @@ yearly_txs <- df_txs |>
   mutate(year_var = if_else(is.na(y_txs/lag(y_txs)-1),
                             true = 0,
                             false = round((y_txs/lag(y_txs)-1),2)))
+
