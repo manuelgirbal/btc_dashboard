@@ -1,4 +1,4 @@
-# BTC_dashboard
+# btc_dashboard
 
 A bitcoin dashboard using R, Shiny and Quarto
 
