@@ -23,7 +23,7 @@ library(lubridate)
 
 # source("scripts/prices.R")
 # source("scripts/transactions.R")
-load("test.RData")
+load("test/test.RData")
 
 ```
 
