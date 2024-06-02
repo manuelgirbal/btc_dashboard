@@ -23,6 +23,10 @@ df_txs <- df_txs |>
     date = as_date(format(as.POSIXct(x, origin = "1970-01-01"), "%Y-%m-%d")),
     txs = y)
 
+df_txs <- df_txs |> 
+  arrange(date) |> 
+  mutate(cum_txs = cumsum(txs))
+
 #Computing yearly variation of transactions:
 yearly_txs <- df_txs |> 
   mutate(year = year(date))  |> 

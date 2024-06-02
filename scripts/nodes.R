@@ -1,6 +1,7 @@
 library(tidyverse)
 library(httr)
 library(jsonlite)
+library(leaflet)
 
 ## Getting nodes data from [Bitnodes](https://bitnodes.io/)
 
@@ -26,59 +27,19 @@ nodes_df$latitude <- as.numeric(nodes_df$latitude)
 nodes_df$longitude <- as.numeric(nodes_df$longitude)
 
 
-library(countrycode)
-library(rnaturalearth)
-library(rnaturalearthdata)
+# Creating the map plot
 
-# Get country name
-country_name <- countrycode(sourcevar = nodes_df$country_code,
-                            origin = 'ecb',
-                            destination = 'country.name')
-
-nodes_df <- cbind(nodes_df, country_name)
-
-# Creating a nodes count and joining with world dataframe
-node_counts <- nodes_df |> 
-  filter(!is.na(country_name)) |> 
-  group_by(country_name, country_code) |> 
-  summarise(nodes = n())
+nodes_map <- leaflet(nodes_df) |>
+  addTiles() |>
+  addCircleMarkers(lng = ~longitude,
+                   lat = ~latitude,
+                   popup = ~city,
+                   color = "darkorange",
+                   fillColor = "orange",
+                   radius = 1) |> 
+  setView(lng = 0, lat = 15, zoom = 2)
 
 
-# Adding polygon data to dataset
-
-world_nodes <- ne_countries(scale = "medium", returnclass = "sf") %>%
-  filter(admin != "Antarctica") %>%
-  mutate(country_code = iso_a2) %>%
-  left_join(node_counts, by = "country_code")
-
-
-
-# Creating and plotting map
-
-nodes_map <- world_nodes %>%
-  ggplot() +
-  geom_sf(aes(fill = nodes)) +
-  labs(title = "Bitcoin's currently running nodes by country",
-       caption = "Source: https://bitnodes.io/") +
-  scale_fill_gradient2(low = "white", mid = "lightgrey", high = "darkorange", na.value = "white") +
-  theme(plot.background = element_rect(fill = "#A6A6A6"),
-        panel.background = element_rect(fill = "#A6A6A6"),
-        panel.grid.major = element_line(colour = "#7A7A7A")
-  )
-
-
-library(leaflet)
-
-leaflet() |> 
-  setView(lng = nodes_df$longitude, lat = nodes_df$latitude, zoom = 6) |> 
-  addProviderTiles("Esri.WorldStreetMap") |> 
-  addCircles(
-    data = nodes_df,
-    radius = nodes_df$node_id
-  )
-
-
-leaflet(nodes_df) |> 
-  addTiles() |> 
-  addCircleMarkers(lng = ~longitude, lat = ~latitude, 
-                   popup = ~nodes_df$node_id)
+# Save used objects while hosting in shinyapps.io
+save(nodes_df, nodes_map,
+     file = "data/nodes.RData")

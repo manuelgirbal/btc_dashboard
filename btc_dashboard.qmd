@@ -23,7 +23,17 @@ library(lubridate)
 
 source("scripts/prices.R")
 source("scripts/transactions.R")
+# source("scripts/nodes.R") | Needs to be pre processed while hosting in shinyapps.io
+load("data/nodes.RData")
 
+```
+
+```{css}
+/* Adjusting font size in valuboxes */
+
+.quarto-dashboard .bslib-value-box .value-box-value {
+    font-size: clamp(.1em, 10cqw, 5em) !important;
+}
 ```
 
 # Basic metrics
@@ -78,12 +88,21 @@ radioButtons("time_period",
 ```
 
 
-### Column 
+### Column {.tabset}
 
 ```{r}
-#| title: "Bitcoin's daily USD price"
+#| title: "Daily USD price"
+#| padding: 0px
 
 plotlyOutput("plot_btcprice")
+
+```
+
+```{r}
+#| title: "Log"
+#| padding: 0px
+
+plotlyOutput("plot_btcprice_log")
 
 ```
 
@@ -107,6 +126,8 @@ btcprice_reactive <- reactive({
 
 })
 
+### First plot
+
 output$plot_btcprice <- renderPlotly({
 
   p1 <- ggplot(btcprice_reactive(), aes(date, price)) +
@@ -121,15 +142,42 @@ output$plot_btcprice <- renderPlotly({
 
 })
 
+### Second plot
+
+output$plot_btcprice_log <- renderPlotly({
+
+  p2 <- ggplot(btcprice_reactive(), aes(date, price)) +
+    geom_line(linewidth = 0.8) +
+    ylab("") +
+    xlab("") +
+    scale_x_date(date_breaks = "2 years", date_labels = "%Y") +
+    theme(plot.background = element_rect(fill = "#FCE9D6"),
+          panel.background = element_rect(fill = "#FCE9D6")) +
+    scale_y_continuous(trans='log10', limits = c(NA, 1e6),
+                       breaks = c(1, 10, 100, 1000, 10000, 100000, 1000000))
+
+  ggplotly(p2)
+
+})
+
 ```
 
 
-### Column 
+### Column {.tabset}
 
 ```{r}
-#| title: "Bitcoin's monthly transactions"
+#| title: "Daily transactions"
+#| padding: 0px
 
 plotlyOutput("plot_txs")
+
+```
+
+```{r}
+#| title: "Cumulative"
+#| padding: 0px
+
+plotlyOutput("plot_cum_txs")
 
 ```
 
@@ -153,9 +201,11 @@ df_txs_reactive <- reactive({
   
 })
 
+### First plot
+
 output$plot_txs <- renderPlotly({
   
-  p2 <- ggplot(df_txs_reactive(), aes(date, txs)) +
+  p3 <- ggplot(df_txs_reactive(), aes(date, txs)) +
     geom_line(linewidth = 0.5) +
     ylab("") +
     xlab("") +
@@ -163,7 +213,23 @@ output$plot_txs <- renderPlotly({
     theme(plot.background = element_rect(fill = "#FCE9D6"),
           panel.background = element_rect(fill = "#FCE9D6"))
   
-  ggplotly(p2)
+  ggplotly(p3)
+  
+})
+
+### Second plot
+
+output$plot_cum_txs <- renderPlotly({
+  
+  p4 <- ggplot(df_txs_reactive(), aes(date, cum_txs)) +
+    geom_line(linewidth = 0.5) +
+    ylab("") +
+    xlab("") +
+    scale_x_date(date_breaks = "2 years", date_labels = "%Y") +
+    theme(plot.background = element_rect(fill = "#FCE9D6"),
+          panel.background = element_rect(fill = "#FCE9D6"))
+  
+  ggplotly(p4)
   
 })
 
@@ -222,5 +288,48 @@ datatable(yearly_txs,
               backgroundColor = styleInterval(c(-0.01, 0.01),
                                               c("#FFCDD2", "#FCE9D6", "#C8E6C9")))
 
+
+```
+
+# Nodes
+
+## Row {height="150"}
+
+### Column
+```{r}
+#| content: valuebox
+#| title: "Reachable nodes (https://bitnodes.io/)"
+#| width: 200
+#| height: 120
+
+list(
+  icon = "router-fill",
+  color = "primary",
+  value = paste(nodes_df |> count())
+)
+
+```
+
+### Column
+```{r}
+#| content: valuebox
+#| title: "TOR nodes (not located in map)"
+#| width: 200
+#| height: 120
+
+list(
+  icon = "incognito",
+  color = "primary",
+  value = paste(nodes_df |> filter(asn == "TOR") |> count())
+)
+```
+
+## Row 
+
+```{r}
+#| title: "Bitcoin's currently running nodes"
+#| padding: 0px
+
+nodes_map
 
 ```
