@@ -20,6 +20,8 @@ library(ggplot2)
 library(plotly)
 library(DT)
 library(lubridate)
+library(bslib)
+library(bsicons)
 
 # source("scripts/prices.R")
 # source("scripts/transactions.R")
@@ -42,31 +44,28 @@ load("test.RData")
 
 ### Column
 ```{r}
-#| content: valuebox
-#| title: "Current price"
-#| width: 200
-#| height: 120
+#| expandable: false
 
-list(
-  icon = "currency-bitcoin",
-  color = "primary",
-  value = paste("$",round(tail(btcprice$price,1),1))
+value_box(
+  title = "Current price",
+  value = paste("$", round(tail(btcprice$price, 1), 1)),
+  showcase = bs_icon("currency-bitcoin"),
+  theme = "primary"
 )
 
 ```
 
 ### Column
 ```{r}
-#| content: valuebox
-#| title: "Total transactions"
-#| width: 200
-#| height: 120
+#| expandable: false
 
-list(
-  icon = "wifi",
-  color = "primary",
-  value = sum(df_txs$txs)
+value_box(
+  title = "Total transactions",
+  value = sum(df_txs$txs),
+  showcase = bs_icon("wifi"),
+  theme = "primary"
 )
+
 ```
 
 
@@ -296,32 +295,30 @@ datatable(yearly_txs,
 ## Row {height="150"}
 
 ### Column
-```{r}
-#| content: valuebox
-#| title: "Reachable nodes (https://bitnodes.io/)"
-#| width: 200
-#| height: 120
 
-list(
-  icon = "router-fill",
-  color = "primary",
-  value = paste(nodes_df |> count())
+```{r}
+#| expandable: false
+
+value_box(
+  title = "Reachable nodes (https://bitnodes.io/)",
+  value = paste(nodes_df |> count()),
+  showcase = bs_icon("router-fill"),
+  theme = "primary"
 )
 
 ```
 
 ### Column
 ```{r}
-#| content: valuebox
-#| title: "TOR nodes (not located in map)"
-#| width: 200
-#| height: 120
+#| expandable: false
 
-list(
-  icon = "incognito",
-  color = "primary",
-  value = paste(nodes_df |> filter(asn == "TOR") |> count())
+value_box(
+  title = "TOR nodes (not located in map)",
+  value = paste(nodes_df |> filter(asn == "TOR") |> count()),
+  showcase = bs_icon("incognito"),
+  theme = "primary"
 )
+
 ```
 
 ## Row 
