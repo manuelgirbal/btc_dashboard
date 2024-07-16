@@ -40,18 +40,13 @@ load("data/nodes.RData")
 
 # Basic metrics
 
-## Row {height="150"}
+## Row {height="200"}
 
 ### Column
 ```{r}
 #| expandable: false
 
-value_box(
-  title = "Current price",
-  value = paste("$", round(tail(btcprice$price, 1), 1)),
-  showcase = bs_icon("currency-bitcoin"),
-  theme = "primary"
-)
+uiOutput("current_price_box")
 
 ```
 
@@ -59,12 +54,7 @@ value_box(
 ```{r}
 #| expandable: false
 
-value_box(
-  title = "Total transactions",
-  value = sum(df_txs$txs),
-  showcase = bs_icon("wifi"),
-  theme = "primary"
-)
+uiOutput("total_transactions_box")
 
 ```
 
@@ -292,19 +282,14 @@ datatable(yearly_txs,
 
 # Nodes
 
-## Row {height="150"}
+## Row {height="200"}
 
 ### Column
 
 ```{r}
 #| expandable: false
 
-value_box(
-  title = "Reachable nodes (https://bitnodes.io/)",
-  value = paste(nodes_df |> count()),
-  showcase = bs_icon("router-fill"),
-  theme = "primary"
-)
+uiOutput("total_nodes_box")
 
 ```
 
@@ -312,12 +297,7 @@ value_box(
 ```{r}
 #| expandable: false
 
-value_box(
-  title = "TOR nodes (not located in map)",
-  value = paste(nodes_df |> filter(asn == "TOR") |> count()),
-  showcase = bs_icon("incognito"),
-  theme = "primary"
-)
+uiOutput("tor_nodes_box")
 
 ```
 
@@ -328,5 +308,46 @@ value_box(
 #| padding: 0px
 
 nodes_map
+
+```
+
+```{r}
+#| context: server
+
+output$current_price_box <- renderUI({
+  value_box(
+    title = "Current price",
+    value = paste("$", round(tail(btcprice$price, 1), 1)),
+    showcase = bs_icon("currency-bitcoin"),
+    theme = "primary"
+  )
+})
+
+output$total_transactions_box <- renderUI({
+  value_box(
+    title = "Total transactions",
+    value = sum(df_txs$txs),
+    showcase = bs_icon("wifi"),
+    theme = "primary"
+  )
+})
+
+output$total_nodes_box <- renderUI({
+  value_box(
+    title = "Reachable nodes (https://bitnodes.io/)",
+    value = nrow(nodes_df),
+    showcase = bs_icon("router-fill"),
+    theme = "primary"
+  )
+})
+
+output$tor_nodes_box <- renderUI({
+  value_box(
+    title = "TOR nodes (not located in map)",
+    value = nrow(filter(nodes_df, asn == "TOR")),
+    showcase = bs_icon("incognito"),
+    theme = "primary"
+  )
+})
 
 ```
