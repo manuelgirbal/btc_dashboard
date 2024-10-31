@@ -8,6 +8,13 @@ format:
     theme: lux
 ---
 
+```{css}
+/* Adjusting font size in valueboxes */
+.quarto-dashboard .bslib-value-box .value-box-value {
+    font-size: clamp(.1em, 10cqw, 5em) !important;
+}
+```
+
 ```{r}
 #| context: setup
 #| include: false
@@ -27,15 +34,6 @@ source("scripts/prices.R")
 source("scripts/transactions.R")
 # source("scripts/nodes.R") | Needs to be pre processed while hosting in shinyapps.io
 load("data/nodes.RData")
-
-```
-
-```{css}
-/* Adjusting font size in valueboxes */
-
-.quarto-dashboard .bslib-value-box .value-box-value {
-    font-size: clamp(.1em, 10cqw, 5em) !important;
-}
 ```
 
 # Basic metrics
@@ -280,6 +278,14 @@ datatable(yearly_txs,
 
 ```
 
+
+## Row
+
+<a href="https://github.com/manuelgirbal/btc_dashboard/" style="text-decoration: none; color: inherit;">
+  <i class="bi bi-github"></i> GitHub source code
+</a>
+
+
 # Nodes
 
 ## Row {height="200"}
@@ -351,3 +357,14 @@ output$tor_nodes_box <- renderUI({
 })
 
 ```
+
+
+## Row
+
+Last update: `r Sys.Date()`
+
+## Row
+
+<a href="https://github.com/manuelgirbal/btc_dashboard/" style="text-decoration: none; color: inherit;">
+  <i class="bi bi-github"></i> GitHub source code
+</a>
